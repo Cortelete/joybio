@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { BIBLE_VERSES, LINKS } from './constants';
 import Starfield from './components/Starfield';
@@ -8,13 +7,32 @@ import Footer from './components/Footer';
 
 const App: React.FC = () => {
   const [verseIndex, setVerseIndex] = useState(0);
+  const [isLogo1, setIsLogo1] = useState(true);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
+    const verseIntervalId = setInterval(() => {
       setVerseIndex((prevIndex) => (prevIndex + 1) % BIBLE_VERSES.length);
     }, 5000);
-    return () => clearInterval(intervalId);
+    return () => clearInterval(verseIntervalId);
   }, []);
+
+  useEffect(() => {
+    const logoIntervalId = setInterval(() => {
+      setIsLogo1((prev) => !prev);
+    }, 5000);
+    return () => clearInterval(logoIntervalId);
+  }, []);
+
+  useEffect(() => {
+    const favicon = document.getElementById('favicon') as HTMLLinkElement | null;
+    if (favicon) {
+      favicon.href = isLogo1 ? '/logo.png' : '/logo2.png';
+    }
+  }, [isLogo1]);
+
+  const handleLogoClick = () => {
+    setIsLogo1((prev) => !prev);
+  };
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden flex items-center justify-center p-4 bg-black">
@@ -23,7 +41,11 @@ const App: React.FC = () => {
       
       <div className="relative z-10 w-full max-w-md mx-auto bg-black/40 backdrop-blur-md rounded-2xl shadow-2xl shadow-yellow-500/10 border border-yellow-500/20 overflow-hidden">
         <div className="p-6 sm:p-8 flex flex-col items-center">
-          <Profile currentVerse={BIBLE_VERSES[verseIndex]} />
+          <Profile 
+            currentVerse={BIBLE_VERSES[verseIndex]} 
+            logoSrc={isLogo1 ? '/logo.png' : '/logo2.png'}
+            onLogoClick={handleLogoClick}
+          />
 
           <div className="w-full flex flex-col items-center gap-4 mt-8">
             {LINKS.map((link) => (
