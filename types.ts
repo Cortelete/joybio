@@ -1,6 +1,8 @@
+import type React from 'react';
 
 export interface Link {
   href: string;
   text: string;
-  icon: JSX.Element;
+  // FIX: Changed JSX.Element to React.ReactElement to fix "Cannot find namespace 'JSX'".
+  icon: React.ReactElement;
 }
