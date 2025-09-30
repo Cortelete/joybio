@@ -4,7 +4,8 @@ import React from 'react';
 interface LinkButtonProps {
   href: string;
   text: string;
-  icon: JSX.Element;
+  // FIX: Changed JSX.Element to React.ReactElement to fix "Cannot find namespace 'JSX'".
+  icon: React.ReactElement;
 }
 
 const LinkButton: React.FC<LinkButtonProps> = ({ href, text, icon }) => {
