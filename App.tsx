@@ -1,119 +1,62 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BIBLE_VERSES, LINKS } from './constants';
+import Starfield from './components/Starfield';
+import Profile from './components/Profile';
 import LinkButton from './components/LinkButton';
-import Modal from './components/Modal';
 import Footer from './components/Footer';
-import GoldenParticles from './components/GoldenParticles';
-import { FormData } from './types';
 
 const App: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    isClient: false,
-    preferredPeriods: [],
-    preferredWeekDays: [],
-    wantsSpecificDate: false,
-    specificDate: '',
-    procedure: [],
-  });
+  const [verseIndex, setVerseIndex] = useState(0);
+  const [isLogo1, setIsLogo1] = useState(true);
 
-  const handleWhatsAppSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const { name, isClient, preferredPeriods, preferredWeekDays, wantsSpecificDate, specificDate, procedure } = formData;
-    if (procedure.length === 0) return;
+  useEffect(() => {
+    const verseIntervalId = setInterval(() => {
+      setVerseIndex((prevIndex) => (prevIndex + 1) % BIBLE_VERSES.length);
+    }, 5000);
+    return () => clearInterval(verseIntervalId);
+  }, []);
 
-    const studioPhoneNumber = '5542999722042';
-    const procedureText = procedure.join(', ');
-    const clientStatusText = isClient ? "Já sou cliente." : "Sou um(a) novo(a) cliente.";
+  useEffect(() => {
+    const logoIntervalId = setInterval(() => {
+      setIsLogo1((prev) => !prev);
+    }, 5000);
+    return () => clearInterval(logoIntervalId);
+  }, []);
 
-    let timeDetails = [];
-    if (wantsSpecificDate && specificDate) {
-        const [year, month, day] = specificDate.split('-');
-        const formattedDate = `${day}/${month}/${year}`;
-        timeDetails.push(`Data específica: ${formattedDate}`);
-    } else {
-        if (preferredPeriods.length > 0) {
-            timeDetails.push(`Período(s): ${preferredPeriods.join(', ')}`);
-        }
-        if (preferredWeekDays.length > 0) {
-            timeDetails.push(`Dia(s) da semana: ${preferredWeekDays.join(', ')}`);
-        }
+  useEffect(() => {
+    const favicon = document.getElementById('favicon') as HTMLLinkElement | null;
+    if (favicon) {
+      favicon.href = isLogo1 ? '/logo.png' : '/logo2.png';
     }
-    
-    const timePreferenceText = timeDetails.length > 0 ? timeDetails.join('\n') : "Nenhuma preferência de horário informada.";
+  }, [isLogo1]);
 
-    const message = `Olá! Gostaria de agendar um horário.\n\n` +
-                  `Nome: ${name}\n` +
-                  `${clientStatusText}\n\n` +
-                  `Procedimento(s): ${procedureText}\n\n` +
-                  `Preferências de Horário:\n${timePreferenceText}\n\n` +
-                  `Aguardo contato, obrigado!`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${studioPhoneNumber}&text=${encodedMessage}`;
-    
-    window.open(whatsappUrl, '_blank');
-    setIsModalOpen(false);
+  const handleLogoClick = () => {
+    setIsLogo1((prev) => !prev);
   };
 
   return (
-    <div className="bg-black min-h-screen text-white flex flex-col items-center justify-between p-4 sm:p-6 relative overflow-hidden">
+    <main className="relative min-h-screen w-full overflow-hidden flex items-center justify-center p-4 bg-black">
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black animate-gradient"></div>
+      <Starfield />
       
-      <GoldenParticles />
+      <div className="relative z-10 w-full max-w-md mx-auto bg-black/40 backdrop-blur-md rounded-2xl shadow-2xl shadow-yellow-500/10 border border-yellow-500/20 overflow-hidden">
+        <div className="p-6 sm:p-8 flex flex-col items-center">
+          <Profile 
+            currentVerse={BIBLE_VERSES[verseIndex]} 
+            logoSrc={isLogo1 ? '/logo.png' : '/logo2.png'}
+            onLogoClick={handleLogoClick}
+          />
 
-      <div className="relative z-10 w-full flex flex-col items-center justify-between flex-grow min-h-screen">
-        <main className="w-full flex flex-col items-center justify-center flex-grow">
-          <header className="relative text-center mb-10 mt-8">
-            <img 
-              src="/outubrorosa.png" 
-              alt="Selo Outubro Rosa" 
-              className="absolute -top-6 -left-12 sm:-left-16 w-24 h-auto transform -rotate-12 pointer-events-none z-20" 
-            />
-            {/* The '/logo.png' path correctly points to the 'public/logo.png' file in the project's root */}
-            <img 
-              src="/logo.png?v=3" 
-              alt="Luxury Studio by Joyci Almeida Logo" 
-              className="w-52 h-auto mx-auto mb-6" 
-            />
-            <h1 className="font-cinzel text-4xl sm:text-5xl font-bold text-amber-300 tracking-widest">
-            Luxury Studio
-            </h1>
-            <p className="text-stone-300 text-lg tracking-[0.2em] uppercase mt-2">
-            Joyci Almeida
-            </p>
-          </header>
-
-          <div className="w-full max-w-sm">
-            <div className="space-y-5 flex flex-col items-center">
-              <LinkButton href="https://www.instagram.com/luxury.joycialmeida">
-                Luxury no Instagram
-              </LinkButton>
-              <LinkButton href="http://luxacademy.vercel.app">
-                Cursos de Lash
-              </LinkButton>
-              <LinkButton onClick={() => setIsModalOpen(true)}>
-                Agendamentos via WhatsApp
-              </LinkButton>
-              <LinkButton href="https://catalogolux.vercel.app/">
-                Nosso Catálogo
-              </LinkButton>
-            </div>
+          <div className="w-full flex flex-col items-center gap-4 mt-8">
+            {LINKS.map((link) => (
+              <LinkButton key={link.href} href={link.href} text={link.text} icon={link.icon} />
+            ))}
           </div>
-        </main>
+        </div>
 
-        <Footer />
+        <Footer clientName="Joyci Almeida" devWhatsApp="5541988710303" />
       </div>
-
-
-      <Modal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={handleWhatsAppSubmit}
-      />
-    </div>
+    </main>
   );
 };
 
