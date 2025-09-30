@@ -39,22 +39,30 @@ const App: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black animate-gradient"></div>
       <Starfield />
       
-      <div className="relative z-10 w-full max-w-md mx-auto bg-black/40 backdrop-blur-md rounded-2xl shadow-2xl shadow-yellow-500/10 border border-yellow-500/20 overflow-hidden">
-        <div className="p-6 sm:p-8 flex flex-col items-center">
-          <Profile 
-            currentVerse={BIBLE_VERSES[verseIndex]} 
-            logoSrc={isLogo1 ? '/logo.png' : '/logo2.png'}
-            onLogoClick={handleLogoClick}
-          />
+      <div className="relative z-10 w-full max-w-md mx-auto">
+        <img
+          src="/outubrorosa.png"
+          alt="Outubro Rosa"
+          className="absolute top-0 left-0 w-16 h-auto z-20 transform -translate-x-3 -translate-y-1 -rotate-12"
+          aria-label="Campanha Outubro Rosa"
+        />
+        <div className="w-full bg-black/40 backdrop-blur-md rounded-2xl shadow-2xl shadow-yellow-500/10 border border-yellow-500/20 overflow-hidden">
+          <div className="p-6 sm:p-8 flex flex-col items-center">
+            <Profile 
+              currentVerse={BIBLE_VERSES[verseIndex]} 
+              logoSrc={isLogo1 ? '/logo.png' : '/logo2.png'}
+              onLogoClick={handleLogoClick}
+            />
 
-          <div className="w-full flex flex-col items-center gap-4 mt-8">
-            {LINKS.map((link) => (
-              <LinkButton key={link.href} href={link.href} text={link.text} icon={link.icon} />
-            ))}
+            <div className="w-full flex flex-col items-center gap-4 mt-8">
+              {LINKS.map((link) => (
+                <LinkButton key={link.href} href={link.href} text={link.text} icon={link.icon} />
+              ))}
+            </div>
           </div>
-        </div>
 
-        <Footer clientName="Joyci Almeida" devWhatsApp="5541988710303" />
+          <Footer clientName="Joyci Almeida" devWhatsApp="5541988710303" />
+        </div>
       </div>
     </main>
   );
